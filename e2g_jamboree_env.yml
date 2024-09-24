@@ -13,4 +13,5 @@ dependencies:
   - r-matrix=1.6_5
   - r-tidyverse=2.0.0
   - r-optparse=1.7.5
+  - pandas=2.2.3
   

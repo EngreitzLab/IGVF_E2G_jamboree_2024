@@ -14,6 +14,10 @@ option_list = list(
               metavar = "character"),
   make_option(c("-l", "--lane"), type = "character", default = NULL,
               help = "Sequencing lane id used to assign barcodes to lanes.", metavar = "character"),
+  make_option(c("-s", "--sample_col"), type = "character", default = "sample",
+              help = paste("Column name in cell type annotations table containing cell type or",
+                           "sample information (default: 'sample')"),
+              metavar = "character"), 
   make_option(c("-o", "--output_directory"), type = "character", default = ".",
               help = "Output directory in which matrix files will be written.",
               metavar = "character")
@@ -90,7 +94,7 @@ outdir <- opt$output_directory
 dir.create(outdir, recursive = TRUE, showWarnings = FALSE)
 
 # get all cell types in matrix
-cell_types <- unique(cell_annot$sample)
+cell_types <- unique(cell_annot[[opt$sample_col]])
 
 # create output files for all cell types
 mtx_basename <- tools::file_path_sans_ext(basename(opt$matrix_file))

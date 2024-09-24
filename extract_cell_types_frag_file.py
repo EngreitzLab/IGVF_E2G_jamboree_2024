@@ -8,7 +8,7 @@ from pathlib import Path
 import pandas as pd
 
 # parse command line arguments
-parser = argparse.ArgumentParser(description = ("Split fragments file into multiple files based"
+parser = argparse.ArgumentParser(description = ("Split fragments file into multiple files based "
                                   "on annotated cell types for each cell barcode."))
 parser.add_argument("-f", "--fragment_file", type = str, required = True,
                     help = "Input fragment file to process.")
@@ -16,6 +16,9 @@ parser.add_argument("-c", "--cell_annot_file", type = str, required = True,
                     help = "File containing cell type annotations for each fragment.")
 parser.add_argument("-l", "--lane", type = str, required = False, default = None,
                     help = "Sequencing lane id used to assign barcodes to lanes.")
+parser.add_argument("-s", "--sample_col", type = str, required = False, default = "sample",
+                    help = ("Column name in cell type annotations table containing cell type or "
+                      "sample information (default: 'sample')"))
 parser.add_argument("-o", "--output_directory", type = str, required = False, default = ".",
                     help = "Output directory in which fragment files will be written.")
 parser.add_argument('--compress_and_index', action = 'store_true',
@@ -34,7 +37,9 @@ cell_annot = cell_annot.rename(columns={'Unnamed: 0': 'barcode'})
 
 # create dictionary with output file for every cell barcode based on annotated cell type
 basename = Path(args.fragment_file).with_suffix('').stem
-cell_annot['outfile'] = args.output_directory + "/" + basename + "." + cell_annot['sample'] + ".tsv"
+cell_annot['outfile'] = (
+  args.output_directory + "/" + basename + "." + cell_annot[args.sample_col] + ".tsv"
+  )
 output_files_dict = cell_annot.set_index('barcode')['outfile'].to_dict()
 
 # create output directory if needed
