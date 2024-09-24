@@ -86,23 +86,23 @@ thresholding strategy can be provided as a string to be added to the metadata he
 Example command:
 ```
 # full predictions
-Rscript reformat_e2g_predictors.R -i K562_10XMultiome_Xu2022_archr.tsv -o K562_10XMultiome_Xu2022_archr.e2g.tsv.gz -g gencode_v43_gene_tss.tsv.gz -c K562 -m ArchR -v 0.0
+Rscript reformat_multiome_e2g_predictions.R -i K562_10XMultiome_Xu2022_archr.tsv -o K562_10XMultiome_Xu2022_archr.e2g.tsv.gz -g gencode_v43_gene_tss.tsv.gz -c K562 -m ArchR -v 0.0
 
 # thresholded predictions
-Rscript reformat_e2g_predictors.R -i K562_10XMultiome_Xu2022_archr_thresholded_score_0.45.tsv -o K562_10XMultiome_Xu2022_archr_thresholded_score_0.45.e2g.tsv.gz -g gencode_v43_gene_tss.tsv.gz -c K562 -m ArchR -v 0.0 -t 'score > 0.45'
+Rscript reformat_multiome_e2g_predictions.R -i K562_10XMultiome_Xu2022_archr_thresholded_score_0.45.tsv -o K562_10XMultiome_Xu2022_archr_thresholded_score_0.45.e2g.tsv.gz -g gencode_v43_gene_tss.tsv.gz -c K562 -m ArchR -v 0.0 -t 'score > 0.45'
 ```
 
 ### scE2G
 scE2G predictions can be reformatted into the IGVF E2G format using the
-`reformat_scE2G_predictors.R` script. When running this script, cell type, model name and versions
+`reformat_scE2G_predictions.R` script. When running this script, cell type, model name and versions
 are specified as input arguments. In case of thresholded predictions, the used thresholding strategy
 can be provided as a string to be added to the metadata header.
 
 Example command:
 ```
 # full predictions
-Rscript reformat_scE2G_predictors.R -i encode_e2g_predictions.tsv.gz -o K562_10XMultiome_Xu2022_scE2G_multiome.e2g.tsv.gz -c K562 -m scE2G -v 0.0
+Rscript reformat_scE2G_predictions.R -i encode_e2g_predictions.tsv.gz -o K562_10XMultiome_Xu2022_scE2G_multiome.e2g.tsv.gz -c K562 -m scE2G -v 0.0
 
 # thresholded predictions
-Rscript reformat_scE2G_predictors.R -i encode_e2g_predictions.tsv.gz -o K562_10XMultiome_Xu2022_scE2G_multiome.e2g.tsv.gz -c K562 -m scE2G -v 0.0 -t 'score > 0.164'
+Rscript reformat_scE2G_predictions.R -i encode_e2g_predictions.tsv.gz -o K562_10XMultiome_Xu2022_scE2G_multiome.e2g.tsv.gz -c K562 -m scE2G -v 0.0 -t 'score > 0.164'
 ```
