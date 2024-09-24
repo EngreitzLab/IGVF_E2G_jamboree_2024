@@ -1,6 +1,6 @@
 # Data processing code for the IGVF E2G pillar project jamboree 2024
 
-### Install all dependencies
+## Install all dependencies
 To install all python and R dependencies, create a conda enviroment using the provided conda
 environment file:
 ```
@@ -11,6 +11,11 @@ To activate the enviroment after installation, simply use:
 ```
 conda activate e2g_jamboree
 ```
+
+## Extract multiome data for individual cell types
+Multiome experiments often contain cells from multiple cell types or cell states. To apply E2G
+methods to individual cell types, ATAC-seq and RNA-seq data has to be extracted for cell barcodes
+assigned to different cell types or states.
 
 ### Extract fragments for each cell type from fragment files
 To extract separate fragment files for all annotated cell types in a multiome fragment file, use the
@@ -65,4 +70,39 @@ and will combine them into the specified output file. This will also create comb
 gene name files in the same directory.
 ```
 Rscript combine_rna_mtx.R -i output/rna_lane1/cells_x_genes.total.cell_type.mtx,output/rna_lane2/cells_x_genes.total.cell_type.mtx -o output/rna_combined/cells_x_genes.total.cell_type.mtx
+```
+
+## Reformat E2G predictions
+Once E2G methods have been applied, they need to be reformatted to the
+[IGVF E2G format](https://docs.google.com/spreadsheets/d/14cV-kO-wllGCDENiBmLYi_r0TMKUY7SMKyVbFFsAQFI/edit?usp=sharing). Following scripts can be used to reformat predictions produced during the jamboree:
+
+### ArchR, Signac, Cicero, SCENT, pgBoost
+Use the `reformat_multiome_e2g_predictions.R` to reformat these predictions to the IGVF format. This
+script also needs a gene id table, which can be downloaded from 
+[here](https://www.synapse.org/Synapse:syn63543830). When running this script, cell type, model name
+and versions are specified as input arguments. In case of thresholded predictions, the used
+thresholding strategy can be provided as a string to be added to the metadata header.
+
+Example command:
+```
+# full predictions
+Rscript reformat_e2g_predictors.R -i K562_10XMultiome_Xu2022_archr.tsv -o K562_10XMultiome_Xu2022_archr.e2g.tsv.gz -g gencode_v43_gene_tss.tsv.gz -c K562 -m ArchR -v 0.0
+
+# thresholded predictions
+Rscript reformat_e2g_predictors.R -i K562_10XMultiome_Xu2022_archr_thresholded_score_0.45.tsv -o K562_10XMultiome_Xu2022_archr_thresholded_score_0.45.e2g.tsv.gz -g gencode_v43_gene_tss.tsv.gz -c K562 -m ArchR -v 0.0 -t 'score > 0.45'
+```
+
+### scE2G
+scE2G predictions can be reformatted into the IGVF E2G format using the
+`reformat_scE2G_predictors.R` script. When running this script, cell type, model name and versions
+are specified as input arguments. In case of thresholded predictions, the used thresholding strategy
+can be provided as a string to be added to the metadata header.
+
+Example command:
+```
+# full predictions
+Rscript reformat_scE2G_predictors.R -i encode_e2g_predictions.tsv.gz -o K562_10XMultiome_Xu2022_scE2G_multiome.e2g.tsv.gz -c K562 -m scE2G -v 0.0
+
+# thresholded predictions
+Rscript reformat_scE2G_predictors.R -i encode_e2g_predictions.tsv.gz -o K562_10XMultiome_Xu2022_scE2G_multiome.e2g.tsv.gz -c K562 -m scE2G -v 0.0 -t 'score > 0.164'
 ```
