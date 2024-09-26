@@ -44,12 +44,12 @@ for (i in required_args) {
 ## Define functions --------------------------------------------------------------------------------
 
 # function to extract barcodes for one cell barcode
-extract_cell_type <- function(cell_type, mtx, outfiles) {
+extract_cell_type <- function(cell_type, mtx, cell_annot, sample_col, outfiles) {
   
   message("Extracting RNA data for cell type ", cell_type)
   
   # extract data on all cell barcodes for given cell type
-  barcodes_cell_type <- pull(filter(cell_annot, sample == cell_type), 1)
+  barcodes_cell_type <- pull(filter(cell_annot, !!sym(sample_col) == cell_type), 1)
   mtx_cell_type <- mtx[intersect(barcodes_cell_type, rownames(mtx)), ]
   
   # write matrix to output file
@@ -108,5 +108,6 @@ outfiles <- tibble(cell_type = cell_types, mtx = mtx_outfiles, cells = cells_out
   split(x = .[, -1], f = .$cell_type)
 
 # extract RNA matrices for each cell type
-invisible(lapply(cell_types, FUN = extract_cell_type, mtx = mtx, outfiles = outfiles))
+invisible(lapply(cell_types, FUN = extract_cell_type, mtx = mtx, cell_annot = cell_annot,
+                 sample_col = opt$sample_col, outfiles = outfiles))
 message("Done")
