@@ -64,7 +64,7 @@ mtx <- lapply(input_mtx, FUN = load_mtx)
 
 # check that column names are the same for all matrices
 mtx_colnames <- lapply(mtx, FUN = colnames)
-mtx_colnames_identical <- Reduce(identical, mtx_colnames)  # False if colnames aren't identical
+mtx_colnames_identical <- all(sapply(mtx_colnames, FUN = identical, mtx_colnames[[1]]))
 if (mtx_colnames_identical == FALSE) {
   stop("Input matrix column names aren't identical.")
 }
