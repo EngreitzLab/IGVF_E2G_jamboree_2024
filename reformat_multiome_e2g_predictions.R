@@ -18,7 +18,11 @@ option_list = list(
               help = "E2G method that produced the predictions", metavar = "character"),
   make_option(c("-v", "--version"), type = "character", default = NULL,
               help = "E2G method version", metavar = "character"),
-  make_option(c("-t", "--threshold"), type = "character", default = NULL,
+  make_option(c("-s", "--score_column"), type = "character", default = NULL,
+              help = "Column name containing main predictor score", metavar = "character"),  
+  make_option(c("-t", "--score_type"), type = "character", default = NULL,
+              help = "Type of the used score, e.g. positive_score", metavar = "character"),
+  make_option(c("--threshold"), type = "character", default = NULL,
               help = "Used score threshold if applicable", metavar = "character") 
   
 )
@@ -36,7 +40,7 @@ check_required_args <- function(arg, opt, opt_parser) {
 }
 
 # check that all required parameters are provided
-required_args <- c("input_file", "output_file", "method", "version")
+required_args <- c("input_file", "output_file", "method", "version", "score_type")
 for (i in required_args) {
   check_required_args(i, opt = opt, opt_parser = opt_parser)
 }
@@ -71,29 +75,29 @@ pred <- fread(opt$input_file)
 
 # get all score columns (all columns except EG-pair defining columns)
 message("Reformatting predictions...")
-score_cols <- setdiff(colnames(pred), c("chr", "start", "end", "TargetGene", "CellType"))
+alt_score_cols <- setdiff(colnames(pred),
+                          c("chr", "start", "end", "TargetGene", "CellType", opt$score_column))
 
-# set cell type
+# set cell type if specified
 if (!is.null(opt$cell_type)) {
-  cell_type <- opt$cell_type
-} else {
-  cell_type <- unique(pred$CellType)
+  pred$CellType <- opt$cell_type
 }
 
 # create header lines
 header <- c(
   paste("# Source:", opt$method),
   paste("# Version:", opt$version),
-  "# GenomeBuild: GRCh38",
   "# URL: [add url]",
+  "# GenomeBuild: GRCh38",
   "# Assays: 10x multiome",
   "# BiosampleAgnostic: False",
-  paste("# BiosampleString:", cell_type)
+  paste("# BiosampleTermName:", unique(pred$CellType)),
+  paste("# ScoreType:", opt$score_type)
 )
 
 # add threshold if applicable
 if (!is.null(opt$threshold)) {
-  header <- c(header, paste("# Threshold:", opt$threshold))
+  header <- c(header, paste("# ScoreThreshold:", opt$threshold))
 }
 
 # add Ensembl id and gene TSS columns
@@ -102,9 +106,10 @@ pred <- left_join(pred, genes, by = c("TargetGene" = "GeneSymbol"))
 # add additional columns and extract output columns
 pred <- pred %>% 
   mutate(ElementChr = paste0("chr", chr), name = paste0(ElementChr, ":", start, "-", end),
-         ElementClass = NA_character_, ElementStrand = ".") %>% 
+         ElementClass = NA_character_) %>% 
   select(ElementChr, ElementStart = start, ElementEnd = end, ElementName = name, ElementClass,
-         ElementStrand, GeneSymbol = TargetGene, GeneEnsemblID, GeneTSS, all_of(score_cols))
+         GeneSymbol = TargetGene, GeneEnsemblID, GeneTSS,
+         BiosampleTermName = CellType, Score = all_of(opt$score_column), all_of(alt_score_cols))
 
 # save to output file
 message("Writing to output file...")

@@ -79,17 +79,18 @@ Once E2G methods have been applied, they need to be reformatted to the
 ### ArchR, Signac, Cicero, SCENT, pgBoost
 Use the `reformat_multiome_e2g_predictions.R` to reformat these predictions to the IGVF format. This
 script also needs a gene id table, which can be downloaded from 
-[here](https://www.synapse.org/Synapse:syn63543830). When running this script, cell type, model name
-and versions are specified as input arguments. In case of thresholded predictions, the used
-thresholding strategy can be provided as a string to be added to the metadata header.
+[here](https://www.synapse.org/Synapse:syn63543830). When running this script, cell type, model
+name, version, primary score column name and score type are specified as input arguments. In case of
+thresholded predictions, the used thresholding strategy can be provided as a string to be added
+to the metadata header.
 
 Example command:
 ```
 # full predictions
-Rscript reformat_multiome_e2g_predictions.R -i K562_10XMultiome_Xu2022_archr.tsv -o K562_10XMultiome_Xu2022_archr.e2g.tsv.gz -g gencode_v43_gene_tss.tsv.gz -c K562 -m ArchR -v 0.0
+Rscript reformat_multiome_e2g_predictions.R -i K562_10XMultiome_Xu2022_archr.tsv -o K562_10XMultiome_Xu2022_archr.e2g.tsv.gz -g gencode_v43_gene_tss.tsv.gz -c K562 -m ArchR -v 0.0 -s Score -t positive_score
 
 # thresholded predictions
-Rscript reformat_multiome_e2g_predictions.R -i K562_10XMultiome_Xu2022_archr_thresholded_score_0.45.tsv -o K562_10XMultiome_Xu2022_archr_thresholded_score_0.45.e2g.tsv.gz -g gencode_v43_gene_tss.tsv.gz -c K562 -m ArchR -v 0.0 -t 'score > 0.45'
+Rscript reformat_multiome_e2g_predictions.R -i K562_10XMultiome_Xu2022_archr_thresholded_score_0.45.tsv -o K562_10XMultiome_Xu2022_archr_thresholded_score_0.45.e2g.tsv.gz -g gencode_v43_gene_tss.tsv.gz -c K562 -m ArchR -v 0.0 -s Score -t positive_score --threshold 'score > 0.45'
 ```
 
 ### scE2G
@@ -104,5 +105,5 @@ Example command:
 Rscript reformat_scE2G_predictions.R -i encode_e2g_predictions.tsv.gz -o K562_10XMultiome_Xu2022_scE2G_multiome.e2g.tsv.gz -c K562 -m scE2G -v 0.0
 
 # thresholded predictions
-Rscript reformat_scE2G_predictions.R -i encode_e2g_predictions.tsv.gz -o K562_10XMultiome_Xu2022_scE2G_multiome.e2g.tsv.gz -c K562 -m scE2G -v 0.0 -t 'score > 0.164'
+Rscript reformat_scE2G_predictions.R -i encode_e2g_predictions.tsv.gz -o K562_10XMultiome_Xu2022_scE2G_multiome.e2g.tsv.gz -c K562 -m scE2G -v 0.0 --threshold 'score > 0.164'
 ```
