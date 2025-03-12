@@ -48,6 +48,7 @@ suppressPackageStartupMessages({
 })
 
 # load input file
+message("Loading predictions...")
 pred <- fread(opt$input_file)
 
 # get all score columns (all columns except EG-pair defining columns)
